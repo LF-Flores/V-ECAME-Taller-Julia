@@ -6,7 +6,7 @@ using InteractiveUtils
 
 # ╔═╡ abe7fd9e-b7a3-11eb-1e21-a5d1fe2d95cd
 begin
-	using Pkg; Pkg.activate("..")
+	using Pkg; Pkg.activate(".")
 	using LinearAlgebra, OffsetArrays, DifferentialEquations, StaticArrays, Plots
 end
 
@@ -15,11 +15,23 @@ md"# Fundamentos de vectores, matrices y arreglos generales en Julia
 
 Cuando estamos trabajando con arreglos en general, especialmente si tenemos más indices que solamente 2 (lo que algunos llamarían tensor, aunque es estrictamente un tensor junto con una elección de base) es conveniente utilizar el objeto de Julia llamado `CartesianIndex`:"
 
+# ╔═╡ c0785225-371b-4ce5-8d9f-c48836a03406
+@doc rand
+
 # ╔═╡ 4cd67fbc-a7c7-4f79-a76d-7e81f159fe45
 A = rand(5,4)
 
+# ╔═╡ b98b4b65-588f-467b-9775-98089f1d90a9
+A[1,3]
+
+# ╔═╡ ba5ca332-f2d7-43f2-972a-1ba1aa9ae095
+A[CartesianIndex(1,3)]
+
 # ╔═╡ 9c35b8ec-f4db-4ecb-865f-d63c9411b8a2
 I = CartesianIndices(A)
+
+# ╔═╡ c3855f09-6e5a-4b8d-9ba8-46f3ec8c5158
+A[I]
 
 # ╔═╡ 1b92242a-696f-4ce2-96ce-aac204bcd7b3
 md"De esa manera podemos tener un solo conjunto $I$ de índices para iterar a lo largo de nuestra matriz:"
@@ -35,6 +47,12 @@ end
 
 # ╔═╡ 84686497-1456-4e04-ba1f-12887cd4cee8
 md"También podemos hacer operaciones convenientes muy comúnmente necesitadas en métodos numéricos como:"
+
+# ╔═╡ 87db89d6-6df1-449c-a92c-b5957cea1499
+G = OffsetArray(zeros(7,6), -6:0, 0:5)
+
+# ╔═╡ e0a6883b-1b34-4810-b264-4ad27d8c867a
+G[-1,5]
 
 # ╔═╡ 6efe7f40-ab78-4328-becd-ab25b3481b13
 A_con_frontera = OffsetArray(zeros(7,6), 0:6, 0:5)
@@ -90,15 +108,26 @@ result = factorize([1 2 3;
 result.D, result.U
 
 # ╔═╡ 01d90460-3e53-4ee7-be7b-5e7158a8f49f
-C = [1 2 3; 
+C = [1 2 0; 
      2 1 4;
-     3 4 1]
+     0 4 1]
 
 # ╔═╡ 36837046-a659-4429-a27e-6cef896fb0bd
 qr(C)
 
 # ╔═╡ fa6695a8-5f7c-41e4-bdd7-99754fa577da
 lu(C)
+
+# ╔═╡ f3a1c6ba-5ea0-4765-b315-1583580467e1
+H = C*C'
+
+# ╔═╡ 7212d931-4883-4dd2-a699-3f73bd5704ee
+J = [ 5   4   0;
+4  21   8;
+0   8  17]
+
+# ╔═╡ 5ce8d534-6a11-4fd8-8108-c8e4932a9b21
+ldlt(J)
 
 # ╔═╡ 5194a7de-3f5b-466b-bafd-2bf1f864086c
 ldlt(SymTridiagonal([3., 4., 5.], [1., 2.]))
@@ -126,7 +155,7 @@ md"En la anterior celda hemos utilizado funciones del paquete `DifferentialEquat
 
 Para poder tener un mejor entendimiento de los pasos de resolución de una ecuación diferencial, consideremos la siguiente
 
-$g(u(t)) = \alpha u(t)$
+$u'(t) = \alpha u(t)$
 
 donde $\alpha \in \mathbb{R}$ y $u:\mathbb{R} \rightarrow \mathbb{R}$ es una función incógnita que puede ser encontrada con técnicas derivadas del cálculo y que confirman el aspecto teórico del campo de las **ecuaciones diferenciales**.
 
@@ -173,6 +202,9 @@ md"Una vez definidas esas condiciones, podemos construir una variable de tipo `O
 # ╔═╡ 38b677d7-7bc5-4e5e-8737-b3b8e40a1b5b
 prob = ODEProblem(g,u₀,tspan)
 
+# ╔═╡ de3bdf8c-1c46-4df4-a4c4-4c0d472e38cb
+typeof(prob)
+
 # ╔═╡ 5c5c68fb-5aa2-41ac-b2df-cb614f612c64
 md"En julia, una vez definido el problema, resolverlo es tan sencillo como escribir `solve`. "
 
@@ -205,11 +237,17 @@ end
 # ╔═╡ Cell order:
 # ╠═abe7fd9e-b7a3-11eb-1e21-a5d1fe2d95cd
 # ╟─9a3bf8cf-1193-47c9-82b4-80feda18c240
+# ╠═c0785225-371b-4ce5-8d9f-c48836a03406
 # ╠═4cd67fbc-a7c7-4f79-a76d-7e81f159fe45
+# ╠═b98b4b65-588f-467b-9775-98089f1d90a9
+# ╠═ba5ca332-f2d7-43f2-972a-1ba1aa9ae095
 # ╠═9c35b8ec-f4db-4ecb-865f-d63c9411b8a2
+# ╠═c3855f09-6e5a-4b8d-9ba8-46f3ec8c5158
 # ╟─1b92242a-696f-4ce2-96ce-aac204bcd7b3
 # ╠═597e92a0-e5d9-49dc-94be-104e79bbe4a8
 # ╟─84686497-1456-4e04-ba1f-12887cd4cee8
+# ╠═87db89d6-6df1-449c-a92c-b5957cea1499
+# ╠═e0a6883b-1b34-4810-b264-4ad27d8c867a
 # ╠═6efe7f40-ab78-4328-becd-ab25b3481b13
 # ╠═46bef35d-706d-42af-a77a-49797dc37afc
 # ╠═d09a47b9-497b-42b9-a00e-091a0b761bb2
@@ -226,6 +264,9 @@ end
 # ╠═01d90460-3e53-4ee7-be7b-5e7158a8f49f
 # ╠═36837046-a659-4429-a27e-6cef896fb0bd
 # ╠═fa6695a8-5f7c-41e4-bdd7-99754fa577da
+# ╠═f3a1c6ba-5ea0-4765-b315-1583580467e1
+# ╠═7212d931-4883-4dd2-a699-3f73bd5704ee
+# ╠═5ce8d534-6a11-4fd8-8108-c8e4932a9b21
 # ╠═5194a7de-3f5b-466b-bafd-2bf1f864086c
 # ╠═2ba5ea70-d73e-4422-a7b0-ba132278105e
 # ╟─e3e1b784-192e-49fb-9aa4-a8a7f3620a9d
@@ -238,6 +279,7 @@ end
 # ╠═51ae2860-27d3-435f-ac29-0a64a96904cf
 # ╟─8db3eff6-cb53-4b0f-8a81-b034ee7aa511
 # ╠═38b677d7-7bc5-4e5e-8737-b3b8e40a1b5b
+# ╠═de3bdf8c-1c46-4df4-a4c4-4c0d472e38cb
 # ╟─5c5c68fb-5aa2-41ac-b2df-cb614f612c64
 # ╠═5bc0c8df-a7f8-40e8-b6ab-8fe115487eac
 # ╟─ae7f9524-6440-4edc-9b91-51e45388619c

@@ -15,7 +15,7 @@ end
 
 # ╔═╡ 98ab1365-b894-4789-85e2-5b36ab05593c
 begin
-	using Pkg; Pkg.activate("..")  # Se indica cuál ambiente virtual usaremos
+	using Pkg; Pkg.activate(".")  # Se indica cuál ambiente virtual usaremos
 	using PlutoUI                  # Para elementos interactivos en Pluto.
 	using Plots                    # Paquete básico de gráficos
 	using LinearAlgebra            # Paquete dentro de la base de Julia.
@@ -24,7 +24,7 @@ end
 # ╔═╡ c4ad90dc-b5f0-11eb-0fcf-c75235c9ff14
 md"# Temario del taller
 1. Fundamentos del lenguaje
-2. 
+2. Básicos de cómputo científico con álgebra lineal y ecuaciones diferenciales
 
 
 
@@ -127,7 +127,9 @@ md"Esta granularidad de elegir un comportamiento por tipo de dato, incluso dentr
 md"... o reaccionar al tipo de matriz que tenemos:"
 
 # ╔═╡ da26fd9e-992c-48b1-9bef-8dca240529aa
-A = [1.5 2 -4; 3 -1 -6; -10 2.3 4]
+A = [1.5 2 -4; 
+	 3 -1 -6; 
+     -10 2.3 4]
 
 # ╔═╡ c058b5dd-3a6e-42d5-9c2c-a574a04cc11a
 factorize(A)
@@ -201,6 +203,9 @@ md"Esto delata que el gran poder de expresión de Julia viene de que su sistema 
 
 Utilicemos un poco los tipos primitivos para familiarizarnos. Podemos construir tipos concretos con sus **constructores** explícitos:
 "
+
+# ╔═╡ 49d3c7b9-7620-4210-8f02-13abbe8475b9
+typeof(4.3f0)
 
 # ╔═╡ bfa230b2-dd27-4872-87c3-5b9c3c66a0d2
 Float32(4)
@@ -343,7 +348,7 @@ begin
 end
 
 # ╔═╡ 0479a5b1-24cd-4b13-9678-971a836958cc
-f(x) = √x + 4/x - 1
+f(x) = √x + 4/x - 1    
 
 # ╔═╡ b713078d-a7bb-4480-99fb-46fb7ec832d6
 g(x) = x^2 + 2x + 1
@@ -379,8 +384,8 @@ begin
 	foo() = "Sin argumentos"
 	foo(x::Int) = x
 	foo(x::Int32) = -x
-	foo(S::String) = length(S)
-	foo(x::Int, S::String) = "¿Aparece $(x) en $(S)? $(occursin(repr(x),S))"
+	foo(S::String) = length(S)  # En python sería más como S.length
+	foo(x::Int, S::String) = "Aparece $(x) en $(S)? $(occursin(repr(x),S))"
 	foo(x::Float64,y::Float64) = sqrt(x^2+y^2)
 	foo(a::Any,b::String)= "Mi primer argumento es más general que un entero"
 end
@@ -393,6 +398,12 @@ foo(3.0, "2043")
 
 # ╔═╡ eb4859ea-b345-4016-9fce-52ac7e0c1219
 foo(3), foo(Int32(3)), foo()
+
+# ╔═╡ cd7fa8c0-5b98-48e5-976f-0668e32ea6f0
+K(p::Punto) = p.x + p.y
+
+# ╔═╡ cb1fd880-2b6b-422a-9d76-bc20b54799e9
+K(Punto(1,3))
 
 # ╔═╡ 75a8f592-8e59-424e-af24-6cae247996ab
 d(p₁::Punto, p₂::Punto) = sqrt((p₁.x - p₂.x)^2 + (p₁.y - p₂.y)^2)
@@ -444,8 +455,19 @@ Finalmente, estudiaremos de manera breve algunas estructuras de datos comunes en
 
 ### Booleanos y condicionales"
 
+# ╔═╡ b333bb63-f34e-42d3-8c39-db719bcf7416
+eps(100000000000000.0)
+
+# ╔═╡ 954bbfc6-1e89-4841-9980-7ac318e64f7e
+1 ≈ 1 + eps()
+
 # ╔═╡ 0be7f348-8668-44b6-8b39-c82f521a7cd0
-50 > 3, 0 ≤ 0, 50 + eps() ≈ 50, !true, false || false
+[50 > 3, 
+0 ≤ 0, 
+50 + eps() ≈ 50, 
+!true, 
+false || false,
+false && true]    
 
 # ╔═╡ 4954217a-2512-4f1f-bb87-9fade8063439
 md"Podemos utilizar variables booleanas como las anteriores para decidir el flujo de evolución de nuestro código utilizando condicionales:"
@@ -502,6 +524,9 @@ md"En esta ocasión ya tenemos que `z` es un tipo concreto que será representad
 # ╔═╡ d9dd4da8-3fff-4830-afd1-e99fd2f2db58
 md"### Estructuras varias de datos"
 
+# ╔═╡ 8ebcd8e3-9e6d-4f21-ac8f-ed9dc27b348a
+typeof(:x)
+
 # ╔═╡ 9a0283dd-3330-4ead-8908-2c8599454954
 typeof.([
 		(1,2,4),
@@ -520,11 +545,23 @@ typeof.([
 		Inf
 	])
 
+# ╔═╡ 1ce58d94-a388-4f5c-9e1c-b2f185ef81c1
+1//1 + 2 
+
+# ╔═╡ 509a37f3-e213-4c75-8d31-8da2b74f253a
+1//0 + 5 
+
+# ╔═╡ fa2ef155-6a47-4207-adb4-5ffab8b67281
+BigFloat(π, precision = 512)
+
+# ╔═╡ 35c8aedb-8bfc-47e4-ac16-e66d6aff3fac
+Rational(BigFloat(π, precision = 512))
+
 # ╔═╡ b0c7c778-7bc5-4faf-8769-0ab9cb64f440
 md"¿Cuál creen que es el resultado de lo siguiente?"
 
 # ╔═╡ b6bc7752-5e16-4263-ae50-2b5f774b5403
-#typeof(Dict(:primera => Dict((1,3) => 1.04), :segunda => Dict((-1, 2.0) => 0.0)))
+typeof(Dict(:primera => Dict((1,3) => 1.04), :segunda => Dict((-1, 2.0) => 0.0)))
 
 # ╔═╡ 4f7e3a91-b45f-44a1-b590-f260f45ea151
 md"Esto nos lleva a lo último de esta sección: Parámetros libres en Structs:"
@@ -534,6 +571,9 @@ struct tipo_paramétrico{T <: Integer}
 	x::T
 	y::T
 end
+
+# ╔═╡ 6f9fe690-86c9-46f7-a7fb-7a4c7892f86e
+🐇₄ = 5
 
 # ╔═╡ 12d29af6-73b7-4d38-9d09-8bd9abe3439a
 tipo_paramétrico(1,3)
@@ -604,6 +644,7 @@ end
 # ╟─5180b5e4-58e1-450f-b1ea-4a1ade1ce5b2
 # ╠═5d4c3f54-bac3-46d9-9e55-24da7996845d
 # ╟─f1d7e13b-1c44-4f75-b39f-06909f19ad11
+# ╠═49d3c7b9-7620-4210-8f02-13abbe8475b9
 # ╠═bfa230b2-dd27-4872-87c3-5b9c3c66a0d2
 # ╠═6a2bd6f0-36f9-4b1b-bae1-44aa4bab2165
 # ╟─2ed6ca54-6d04-4d62-b45d-0ef148998c84
@@ -622,6 +663,8 @@ end
 # ╟─5575dec3-019e-4289-82af-d344a6272daa
 # ╠═32c5efdd-fa3c-444a-9fde-2c4f0eb05c81
 # ╠═fa3e55e3-4108-4375-9c41-7883e56d5e35
+# ╠═cd7fa8c0-5b98-48e5-976f-0668e32ea6f0
+# ╠═cb1fd880-2b6b-422a-9d76-bc20b54799e9
 # ╟─e5fee360-a032-47f0-982a-d25f2967a275
 # ╠═3a83c2ec-a5b2-4262-a6af-c2b551eb5ad5
 # ╠═67bec5e3-ac68-4038-8ae0-2b36ae4ad79e
@@ -644,9 +687,11 @@ end
 # ╠═c0e7757f-5a70-45be-a959-b2e5eb971370
 # ╟─129972fa-0c56-4191-aaeb-f2bbc153c31b
 # ╠═5d174192-0b41-40ad-b9d1-abc096ab4573
-# ╠═d56213e8-0862-47e1-b142-2c7272d5548c
+# ╟─d56213e8-0862-47e1-b142-2c7272d5548c
 # ╠═6852539b-b0c1-4c97-87c1-ba664a0dc7d2
 # ╟─33f45a7f-b52a-4d30-9c7e-69948755e90e
+# ╠═b333bb63-f34e-42d3-8c39-db719bcf7416
+# ╠═954bbfc6-1e89-4841-9980-7ac318e64f7e
 # ╠═0be7f348-8668-44b6-8b39-c82f521a7cd0
 # ╟─4954217a-2512-4f1f-bb87-9fade8063439
 # ╟─8264168c-5ddf-45e5-8a89-700b63e212e0
@@ -657,11 +702,17 @@ end
 # ╠═8f764674-62a5-4cfc-8b1d-d760c13a0b14
 # ╟─bb0b04e9-b147-4e39-abb2-be66680404bd
 # ╟─d9dd4da8-3fff-4830-afd1-e99fd2f2db58
+# ╠═8ebcd8e3-9e6d-4f21-ac8f-ed9dc27b348a
 # ╠═9a0283dd-3330-4ead-8908-2c8599454954
+# ╠═1ce58d94-a388-4f5c-9e1c-b2f185ef81c1
+# ╠═509a37f3-e213-4c75-8d31-8da2b74f253a
+# ╠═fa2ef155-6a47-4207-adb4-5ffab8b67281
+# ╠═35c8aedb-8bfc-47e4-ac16-e66d6aff3fac
 # ╟─b0c7c778-7bc5-4faf-8769-0ab9cb64f440
 # ╠═b6bc7752-5e16-4263-ae50-2b5f774b5403
 # ╟─4f7e3a91-b45f-44a1-b590-f260f45ea151
 # ╠═7fe38486-0e07-4c25-9e2a-328d2e127268
+# ╠═6f9fe690-86c9-46f7-a7fb-7a4c7892f86e
 # ╠═12d29af6-73b7-4d38-9d09-8bd9abe3439a
 # ╠═92e1a00f-c8fc-4d7e-9c3b-7f5f46e3d470
 # ╟─94619f75-02cb-4234-941c-516ff8cf70a6
